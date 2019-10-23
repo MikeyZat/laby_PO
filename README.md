@@ -1,4 +1,5 @@
 # laby_PO
 Object Oriented Programming in Java, classes at the University
 
-lab1 is code from 3rd classes, lab2 from 4rd classes and so on...
+Specific branches contain source code from corresponding classes.
+I decided to do this this way since the code we implement is usually based on what we have done on previous classes.
