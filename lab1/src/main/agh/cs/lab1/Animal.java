@@ -28,11 +28,16 @@ public class Animal {
     @Override
     public String toString() {
         switch (orientation) {
-            case NORTH: return "N";
-            case SOUTH: return "S";
-            case WEST: return "W";
-            case EAST: return "E";
-            default: return "Default";
+            case NORTH:
+                return "N";
+            case SOUTH:
+                return "S";
+            case WEST:
+                return "W";
+            case EAST:
+                return "E";
+            default:
+                return "Default";
         }
     }
 

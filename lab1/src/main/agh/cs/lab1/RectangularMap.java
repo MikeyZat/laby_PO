@@ -23,7 +23,7 @@ public class RectangularMap implements IWorldMap {
 
     @Override
     public boolean place(Animal animal) {
-        if(!isOccupied(animal.getPosition())) {
+        if (!isOccupied(animal.getPosition())) {
             animals.add(animal);
             return true;
         }
@@ -32,9 +32,10 @@ public class RectangularMap implements IWorldMap {
 
     @Override
     public void run(MoveDirection[] directions) {
-        int n = animals.size();
-        for( int i = 0; i < n; i++) {
-            animals.get(i%n).move(directions[i]);
+        int animalsSize = animals.size();
+        int directionsSize = directions.length;
+        for (int i = 0; i < directionsSize; i++) {
+            animals.get(i % animalsSize).move(directions[i]);
         }
 
     }
@@ -46,7 +47,7 @@ public class RectangularMap implements IWorldMap {
 
     @Override
     public Object objectAt(Vector2d position) {
-        for( Animal animal : animals){
+        for (Animal animal : animals) {
             if (animal.getPosition().equals(position)) {
                 return animal;
             }
