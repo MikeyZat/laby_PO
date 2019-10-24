@@ -3,6 +3,7 @@ package agh.cs.lab1;
 public class Animal {
     private Vector2d position;
     private MapDirection orientation;
+    private IWorldMap map;
 
     public Animal() {
         this(2, 2);
@@ -13,9 +14,26 @@ public class Animal {
         orientation = MapDirection.NORTH;
     }
 
+    public Animal(IWorldMap map) {
+        this();
+        this.map = map;
+    }
+
+    public Animal(IWorldMap map, Vector2d initPosition) {
+        this.map = map;
+        this.position = initPosition;
+        orientation = MapDirection.NORTH;
+    }
+
     @Override
     public String toString() {
-        return "this animal stands at " + position.toString() + " and is oriented to the " + orientation.toString();
+        switch (orientation) {
+            case NORTH: return "N";
+            case SOUTH: return "S";
+            case WEST: return "W";
+            case EAST: return "E";
+            default: return "Default";
+        }
     }
 
     public void move(MoveDirection direction) {
@@ -31,9 +49,8 @@ public class Animal {
                 Vector2d delta = orientation.toUnitVector();
                 if (direction == MoveDirection.BACKWARD) delta = delta.opposite();
                 Vector2d newPosition = position.add(delta);
-                if (newPosition.precedes(new Vector2d(4,4)) && newPosition.follow(new Vector2d(0, 0))) {
+                if (map.canMoveTo(newPosition))
                     position = newPosition;
-                }
                 break;
         }
     }
