@@ -39,7 +39,7 @@ public class RectangularMapTest {
     public void canMoveTo() {
         assertFalse(map.canMoveTo(animal1.getPosition()));
         assertFalse(map.canMoveTo(animal2.getPosition()));
-        assertFalse(map.canMoveTo(new Vector2d(3,9)));
+        assertTrue(map.canMoveTo(new Vector2d(8,4)));
         assertFalse(map.canMoveTo(new Vector2d(3, 11)));
     }
 
@@ -48,7 +48,7 @@ public class RectangularMapTest {
     public void place() {
         Animal newAnimal1 = new Animal(map, animal1.getPosition());
         Animal newAnimal2 = new Animal(map, animal2.getPosition());
-        Animal newAnimal3 = new Animal(map, new Vector2d(3,9));
+        Animal newAnimal3 = new Animal(map, new Vector2d(9,3));
         Animal newAnimal4 = new Animal(map, new Vector2d(3,43));
         assertFalse(map.place(newAnimal1));
         assertFalse(map.place(newAnimal2));
@@ -58,5 +58,14 @@ public class RectangularMapTest {
 
     @Test
     public void run() {
+        Vector2d oldCord = animal1.getPosition();
+        String[] customArgs = {"f", "b", "r", "l", "f", "l", "r", "f", "f", "f"};
+        MoveDirection[] directions = new OptionsParser().parse(customArgs);
+        map.run(directions);
+        assertEquals("N", map.objectAt(new Vector2d(1, 1)).toString());
+        assertEquals("S", map.objectAt(new Vector2d(3, 2)).toString());
+        assertFalse(map.isOccupied(new Vector2d(3, 4)));
+        assertFalse(map.isOccupied(oldCord));
+
     }
 }
