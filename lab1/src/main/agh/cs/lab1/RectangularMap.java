@@ -34,6 +34,10 @@ public class RectangularMap implements IWorldMap {
     public void run(MoveDirection[] directions) {
         int animalsSize = animals.size();
         int directionsSize = directions.length;
+        if (animalsSize == 0) {
+            System.out.println("No animals in map");
+            return;
+        }
         for (int i = 0; i < directionsSize; i++) {
             animals.get(i % animalsSize).move(directions[i]);
         }
