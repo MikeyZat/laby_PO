@@ -1,6 +1,6 @@
 package agh.cs.lab1;
 
-public class Animal {
+public class Animal implements IMapObject{
     private Vector2d position;
     private MapDirection orientation;
     private IWorldMap map;
