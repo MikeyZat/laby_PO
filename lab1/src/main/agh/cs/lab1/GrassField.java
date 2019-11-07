@@ -3,15 +3,12 @@ package agh.cs.lab1;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GrassField implements IWorldMap {
-    private Vector2d rightUpCorner;
-    private Vector2d leftDownCorner;
+public class GrassField extends AbstractWorldMap implements IWorldMap {
     private boolean changed;
-    private ArrayList<Animal> animals = new ArrayList<>();
     private ArrayList<Grass> grasses = new ArrayList<>();
 
     public GrassField(int grass_number){
-        int size = size(grass_number);
+        int size = (int)Math.sqrt((double) grass_number*10);
 
         Random randomGenerator = new Random();
         while(grass_number > 0) {
@@ -33,10 +30,6 @@ public class GrassField implements IWorldMap {
         changed = false;
     }
 
-    private int size(int n){
-        return (int)Math.sqrt((double) n*10);
-    }
-
     @Override
     public boolean canMoveTo(Vector2d position) {
         return !(objectAt(position) instanceof Animal);
@@ -44,41 +37,20 @@ public class GrassField implements IWorldMap {
 
     @Override
     public boolean place(Animal animal) {
-        if (canMoveTo(animal.getPosition())) {
-            changed = true;
-            animals.add(animal);
-            return true;
-        }
-        return false;
+        changed = super.place(animal);
+        return changed;
     }
 
     @Override
     public void run(MoveDirection[] directions) {
-        int animalsSize = animals.size();
-        int directionsSize = directions.length;
-        if (animalsSize == 0) {
-            System.out.println("No animals in map");
-            return;
-        }
+        super.run(directions);
         changed = true;
-        for (int i = 0; i < directionsSize; i++) {
-            animals.get(i % animalsSize).move(directions[i]);
-        }
-
-    }
-
-    @Override
-    public boolean isOccupied(Vector2d position) {
-        return objectAt(position) != null;
     }
 
     @Override
     public Object objectAt(Vector2d position) {
-        for (Animal animal : animals) {
-            if (animal.getPosition().equals(position)) {
-                return animal;
-            }
-        }
+        Object animal = super.objectAt(position);
+        if ( animal != null ) return animal;
 
         for (Grass grass : grasses) {
             if (grass.getPosition().equals(position)) {
@@ -90,7 +62,6 @@ public class GrassField implements IWorldMap {
 
     @Override
     public String toString() {
-        MapVisualizer visualizer = new MapVisualizer(this);
         if (changed) {
             for (IMapObject animal : animals) {
                 leftDownCorner = animal.getPosition().lowerLeft(leftDownCorner);
@@ -102,6 +73,6 @@ public class GrassField implements IWorldMap {
             }
             changed = false;
         }
-        return visualizer.draw(leftDownCorner, rightUpCorner);
+        return super.toString();
     }
 }

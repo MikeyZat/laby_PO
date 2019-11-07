@@ -27,8 +27,8 @@ public class AnimalTest {
 
     @Test
     public void testToString() {
-        assertEquals("this animal stands at (2,2) and is oriented to the Północ", normalAnimal.toString());
-        assertEquals("this animal stands at (0,4) and is oriented to the Północ", animal_0_4.toString());
+        assertEquals("N", normalAnimal.toString());
+        assertEquals("N", animal_0_4.toString());
     }
 
     @Test
