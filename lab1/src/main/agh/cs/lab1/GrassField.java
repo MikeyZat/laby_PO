@@ -1,5 +1,6 @@
 package agh.cs.lab1;
 
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -63,13 +64,11 @@ public class GrassField extends AbstractWorldMap implements IWorldMap {
     @Override
     public String toString() {
         if (changed) {
-            for (IMapObject animal : animals) {
-                leftDownCorner = animal.getPosition().lowerLeft(leftDownCorner);
-                rightUpCorner = animal.getPosition().upperRight(rightUpCorner);
-            }
-            for (IMapObject grass : grasses) {
-                leftDownCorner = grass.getPosition().lowerLeft(leftDownCorner);
-                rightUpCorner = grass.getPosition().upperRight(rightUpCorner);
+            ArrayList<IMapObject> objectsInMap = new ArrayList<IMapObject>(animals);
+            objectsInMap.addAll(grasses);
+            for (IMapObject objectInMap : objectsInMap) {
+                leftDownCorner = objectInMap.getPosition().lowerLeft(leftDownCorner);
+                rightUpCorner = objectInMap.getPosition().upperRight(rightUpCorner);
             }
             changed = false;
         }

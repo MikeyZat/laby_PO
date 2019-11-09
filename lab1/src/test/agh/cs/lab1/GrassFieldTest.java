@@ -13,7 +13,7 @@ public class GrassFieldTest {
     public void init(){
         String[] customArgs = {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f"};
         MoveDirection[] directions = new OptionsParser().parse(customArgs);
-        map = new RectangularMap(10, 5);
+        map = new GrassField(10);
         animal1 = new Animal(map);
         animal2 = new Animal(map, new Vector2d(3, 4));
         map.place(animal1);
@@ -21,7 +21,6 @@ public class GrassFieldTest {
         map.run(directions);
     }
 
-    @Test
     public void objectAt() {
         assertNull(map.objectAt(new Vector2d(1, 1)));
         assertEquals(animal1, map.objectAt(animal1.getPosition()));
@@ -40,7 +39,7 @@ public class GrassFieldTest {
         assertFalse(map.canMoveTo(animal1.getPosition()));
         assertFalse(map.canMoveTo(animal2.getPosition()));
         assertTrue(map.canMoveTo(new Vector2d(8,4)));
-        assertFalse(map.canMoveTo(new Vector2d(3, 11)));
+        assertTrue(map.canMoveTo(new Vector2d(3, 11)));
     }
 
 
@@ -53,7 +52,7 @@ public class GrassFieldTest {
         assertFalse(map.place(newAnimal1));
         assertFalse(map.place(newAnimal2));
         assertTrue(map.place(newAnimal3));
-        assertFalse(map.place(newAnimal4));
+        assertTrue(map.place(newAnimal4));
     }
 
     @Test
@@ -62,10 +61,10 @@ public class GrassFieldTest {
         String[] customArgs = {"f", "b", "r", "l", "f", "l", "r", "f", "f", "f"};
         MoveDirection[] directions = new OptionsParser().parse(customArgs);
         map.run(directions);
-        assertEquals("N", map.objectAt(new Vector2d(1, 1)).toString());
-        assertEquals("S", map.objectAt(new Vector2d(3, 2)).toString());
-        assertFalse(map.isOccupied(new Vector2d(3, 4)));
-        assertFalse(map.isOccupied(oldCord));
+        assertEquals("N", map.objectAt(new Vector2d(1, -1)).toString());
+        assertEquals("S", map.objectAt(new Vector2d(3, 3)).toString());
+        assertTrue(map.canMoveTo(new Vector2d(3, 4)));
+        assertTrue(map.canMoveTo(oldCord));
 
     }
 }
