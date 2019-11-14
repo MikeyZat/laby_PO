@@ -10,7 +10,6 @@ public class World {
             MoveDirection[] directions = new OptionsParser().parse(customArgs);
             IWorldMap map = new GrassField(10);
             map.place(new Animal(map));
-            map.place(new Animal(map));
             map.run(directions);
             System.out.println(map);
         } catch (IllegalArgumentException exception) {

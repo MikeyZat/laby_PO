@@ -45,14 +45,16 @@ public class GrassFieldTest {
 
     @Test
     public void place() {
-        Animal newAnimal1 = new Animal(map, animal1.getPosition());
-        Animal newAnimal2 = new Animal(map, animal2.getPosition());
         Animal newAnimal3 = new Animal(map, new Vector2d(9,3));
         Animal newAnimal4 = new Animal(map, new Vector2d(3,43));
-        assertFalse(map.place(newAnimal1));
-        assertFalse(map.place(newAnimal2));
         assertTrue(map.place(newAnimal3));
         assertTrue(map.place(newAnimal4));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void placePositionTaken() {
+        Animal newAnimal1 = new Animal(map, animal1.getPosition());
+        assertFalse(map.place(newAnimal1));
     }
 
     @Test

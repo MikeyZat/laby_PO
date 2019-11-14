@@ -1,11 +1,11 @@
 package agh.cs.lab1;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public abstract class AbstractWorldMap implements IWorldMap {
     protected Vector2d rightUpCorner;
     protected Vector2d leftDownCorner;
-    protected ArrayList<Animal> animals = new ArrayList<>();
+    protected Map<Vector2d, Animal> animals = new HashMap<>();
 
     @Override
     public void run(MoveDirection[] directions) {
@@ -13,11 +13,11 @@ public abstract class AbstractWorldMap implements IWorldMap {
         int directionsSize = directions.length;
         if (animalsSize == 0) {
             System.out.println("No animals in map");
-            return;
+//            return;
         }
-        for (int i = 0; i < directionsSize; i++) {
-            animals.get(i % animalsSize).move(directions[i]);
-        }
+//        for (int i = 0; i < directionsSize; i++) {
+//            animals.get(i % animalsSize).move(directions[i]);
+//        }
     }
 
     @Override
@@ -34,10 +34,8 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     @Override
     public Object objectAt(Vector2d position) {
-        for (Animal animal : animals) {
-            if (animal.getPosition().equals(position)) {
-                return animal;
-            }
+        if (animals.containsKey(position)){
+            return animals.get(position);
         }
         return null;
     }
@@ -45,7 +43,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
     @Override
     public boolean place(Animal animal) throws IllegalArgumentException{
         if (canMoveTo(animal.getPosition())) {
-            animals.add(animal);
+            animals.put(animal.getPosition(), animal);
             return true;
         }
         throw new IllegalArgumentException("Position " + animal.getPosition() + " is already taken.");

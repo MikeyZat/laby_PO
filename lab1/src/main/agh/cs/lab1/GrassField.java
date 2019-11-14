@@ -1,12 +1,11 @@
 package agh.cs.lab1;
 
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class GrassField extends AbstractWorldMap implements IWorldMap {
     private boolean changed;
-    private ArrayList<Grass> grasses = new ArrayList<>();
+    private Map<Vector2d, Grass> grasses = new HashMap<>();
 
     public GrassField(int grass_number){
         int size = (int)Math.sqrt((double) grass_number*10);
@@ -20,11 +19,11 @@ public class GrassField extends AbstractWorldMap implements IWorldMap {
                 leftDownCorner = position;
                 rightUpCorner = position;
                 Grass grass = new Grass(position);
-                grasses.add(grass);
+                grasses.put(position, grass);
                 grass_number--;
             }
         }
-        for (IMapObject grass : grasses) {
+        for (IMapObject grass : grasses.values()) {
             leftDownCorner = grass.getPosition().lowerLeft(leftDownCorner);
             rightUpCorner = grass.getPosition().upperRight(rightUpCorner);
         }
@@ -53,7 +52,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap {
         Object animal = super.objectAt(position);
         if ( animal != null ) return animal;
 
-        for (Grass grass : grasses) {
+        for (Grass grass : grasses.values()) {
             if (grass.getPosition().equals(position)) {
                 return grass;
             }
@@ -64,9 +63,9 @@ public class GrassField extends AbstractWorldMap implements IWorldMap {
     @Override
     public String toString() {
         if (changed) {
-            ArrayList<IMapObject> objectsInMap = new ArrayList<IMapObject>(animals);
-            objectsInMap.addAll(grasses);
-            for (IMapObject objectInMap : objectsInMap) {
+            Map<Vector2d, IMapObject> objectsInMap = new HashMap<>(animals);
+            objectsInMap.putAll(grasses);
+            for (IMapObject objectInMap : objectsInMap.values()) {
                 leftDownCorner = objectInMap.getPosition().lowerLeft(leftDownCorner);
                 rightUpCorner = objectInMap.getPosition().upperRight(rightUpCorner);
             }

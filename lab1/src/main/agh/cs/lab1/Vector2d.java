@@ -48,6 +48,14 @@ public class Vector2d {
         return (this.x == that.x && this.y == that.y);
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 13;
+        hash += this.x * 1211;
+        hash += this.y * 1337;
+        return hash%32181246;
+    }
+
     public Vector2d opposite(){
         return new Vector2d(-x, -y);
     }
