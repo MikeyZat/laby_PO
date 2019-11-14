@@ -1,8 +1,6 @@
 package agh.cs.lab1;
 
 
-import java.util.ArrayList;
-
 public class RectangularMap extends AbstractWorldMap implements IWorldMap {
     private final int START_X = 0;
     private final int START_Y = 0;

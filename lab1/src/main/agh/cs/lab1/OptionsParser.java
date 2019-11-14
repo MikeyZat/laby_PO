@@ -12,7 +12,7 @@ public class OptionsParser {
                 .toArray(MoveDirection[]::new);
     }
 
-    private static MoveDirection getDirectionFromString(String direction) {
+    private static MoveDirection getDirectionFromString(String direction) throws IllegalArgumentException {
         switch (direction){
             case "f":
             case "forward":
@@ -27,7 +27,7 @@ public class OptionsParser {
             case "left":
                 return MoveDirection.LEFT;
             default:
-                return null;
+                throw new IllegalArgumentException("Argument " + direction + " isn't a correct move order");
         }
     }
 }

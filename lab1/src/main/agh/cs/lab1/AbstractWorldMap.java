@@ -43,12 +43,12 @@ public abstract class AbstractWorldMap implements IWorldMap {
     }
 
     @Override
-    public boolean place(Animal animal) {
+    public boolean place(Animal animal) throws IllegalArgumentException{
         if (canMoveTo(animal.getPosition())) {
             animals.add(animal);
             return true;
         }
-        return false;
+        throw new IllegalArgumentException("Position " + animal.getPosition() + " is already taken.");
     }
 
 }
