@@ -6,18 +6,22 @@ public abstract class AbstractWorldMap implements IWorldMap {
     protected Vector2d rightUpCorner;
     protected Vector2d leftDownCorner;
     protected Map<Vector2d, Animal> animals = new HashMap<>();
+    protected List<Animal> animalsList = new ArrayList<>();
 
     @Override
     public void run(MoveDirection[] directions) {
-        int animalsSize = animals.size();
+        int animalsSize = animalsList.size();
         int directionsSize = directions.length;
         if (animalsSize == 0) {
             System.out.println("No animals in map");
-//            return;
+            return;
         }
-//        for (int i = 0; i < directionsSize; i++) {
-//            animals.get(i % animalsSize).move(directions[i]);
-//        }
+        for (int i = 0; i < directionsSize; i++) {
+            Animal animal = animalsList.get(i % animalsSize);
+            animals.remove(animal.getPosition());
+            animal.move(directions[i]);
+            animals.put(animal.getPosition(), animal);
+        }
     }
 
     @Override
@@ -44,6 +48,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
     public boolean place(Animal animal) throws IllegalArgumentException{
         if (canMoveTo(animal.getPosition())) {
             animals.put(animal.getPosition(), animal);
+            animalsList.add(animal);
             return true;
         }
         throw new IllegalArgumentException("Position " + animal.getPosition() + " is already taken.");

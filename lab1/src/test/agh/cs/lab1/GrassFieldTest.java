@@ -20,7 +20,7 @@ public class GrassFieldTest {
         map.place(animal2);
         map.run(directions);
     }
-
+    @Test
     public void objectAt() {
         assertNull(map.objectAt(new Vector2d(1, 1)));
         assertEquals(animal1, map.objectAt(animal1.getPosition()));

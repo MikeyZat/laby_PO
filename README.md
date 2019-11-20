@@ -1,34 +1,92 @@
+# Laboratorium 6
+
+Celem laboratorium jest zapoznanie się z mechanizmem wyjątków oraz interfejsem `Map`.
+
+## Przydatne informacje
+
+* Wyjątki są mechanizmem pozwalającym przekazywać informację o błędzie pomiędzy odległymi fragmentami kodu.
+* Zgłoszenie błędu odbywa się poprze *rzucenie wyjątku*. W Javie służy do tego słowo kluczowe `throw`:
+
+```java
+throw new IllegalArgumentException("ABC argument is invalid")
+```
+* Nieobsłużony wyjątek powoduje przerwanie działania aplikacji.
+* Obsługa wyjątków odbywa się za pomocą mechanizmu *przechwytywania wyjątków*. W Javie służy do tego konstrukcja
+  `try...catch`:
+
+```java
+try {
+  // kod który może rzucić wyjątek
+} catch(IllegalArgumentException ex) {
+  // kod obsługi wyjątku
+}
+```
+Wyjątek może być rzucony na dowolnym poziomie w kodzie, który otoczony jest blokiem `try`. Tzn. w kodzie tym może być
+wiele zagnieżdżonych wywołań funkcji, a i tak blok `try` przechwyci taki wyjątek, pod warunkim, że nie zostanie on obsłużony
+na niższym poziomie.
+
+* Interfejs `Map` definiuje w Javie strukturę słownikową, czyli mapę odwzorowującą *klucze* na *wartości*.
+* Jedną z najczęściej wykorzystywanych implementacji interfejsu `Map` jest klasa `HashMap`, przykładowo:
+
+```java
+Map<Vector2d,Animal> animals = new HashMap<>();
+```
+
+* Poprawne działanie `HashMap` uzależnione jest od implementacji metod `equals` oraz `hashCode` w klasie, która stanowi
+  klucze mapy (w ćwiczeniu dotyczy to klasy `Vector2d`).
+
+* Wynik działania metody `hashCode` musi być zgodny z wynikiem działania metody `equals`, tzn. jeśli dwa obiekty są
+  równe według `equals` to ich `hashCode` musi być równy.
+
+* Przykładowa implementacja metody `hashCode` dla klasy `Vector2d` może wyglądać następująco:
+
+```java
+@Override
+public int hashCode() {
+  int hash = 13;
+  hash += this.x * 31;
+  hash += this.y * 17;
+  return hash;
+}
+```
+
+Istotą kodu nie są konkretne wartości, przez które mnożone są składniki `x` i `y` ale fakt, że dla identycznych wartości
+`x` i `y` wartość funkcji `hashCode` będzie identyczna.
+
 ## Zadania do wykonania
 
-0. Wykorzystaj klasy z laboratorium nr 4.
-1. Zdefiniuj klasę `Grass` (kępka trawy), która:
-   * w konstruktorze akceptuje parametr `Vector2d`, określający pozycję kępki trawy,
-   * posiada metodę publiczną `Vector2d getPosition()`, która zwraca jej pozycję,
-   * posiada metodę publiczną `String toString()`, która zwraca `*` jako swoją reprezentację.
-1. Zdefiniuj klasę `GrassField`, która:
-   * implementuje interfejs `IWorldMap`,
-   * w konstruktorze akceptuje parametr określający liczbę pól trawy, które znajdują się na mapie,
-   * kępki trawy powinny być umieszczane losowo w obszarze o współrzędnych `(0,0)` - `(sqrt(n*10),sqrt(n*10))`, 
-     gdzien `n` to liczba pól trawy, przy założeniu, że dwie kępki trawy nie mogą być w tym samym miejscu,
-   * umożliwia nieograniczone poruszanie się zwierzęcia po mapie, pod warunkiem, że nie wchodzin na inne zwierzę,
-   * posiada metodę `String toString()`, która rysuje fragment mapy, na którym znajdują się wszystkie elementy (zwierzęta oraz trawę). 
-     W celu jej implementacji wykorzystaj klasę `MapVisualizer` z poprzedniego laboratorium oraz
-     dynamicznie oblicz skrajne punkty, które powinny zostać wyświetlone. Obecność zwierząt ma priorytet nad obecnością
-     kępki trawy na danym polu.
-2. Sprawdź czy implementacja klasy jest poprawna - zainicjuj mapę z 10 kępkami trawy.
-   Uruchom tę samą sekwencję ruchów co w laboratorium 4.
-3. Dodaj testy do klas `RectangularMap` oraz `GrassField` weryfikujące poprawność działania metod dostępnych w
-   interfejsie `IWorldMap`,
-4. Przyjrzyj się implementacjom tych klas - łatwo można zauważyć, że duża część kodu w obu klasach się powtarza. 
-5. Dodaj klasę abstrakcyjną `AbstractWorldMap`, która zawiera kod wspólny dla tych klas.
-6. Spraw aby obie klasy dziedziczyły z `AbstractWorldMap` oraz usuń kod, który jest już zaimplementowany w klasie
-   `AbstractWorldMap`. W szczególności dodaj implementację metody `toString()` w klasie `AbstractWorldMap`, w taki
-   sposób, aby wykorzystywała ona abstrakcyjne metody zdefiniowane w tej klasie, posiadające odrębne implementacje w
-   klasach dziedziczących. Jest wzorzec projektowy *metoda szablonowa*.
-7. Uruchom testy i zweryfikuj, że mapy działają tak jak wcześniej.
-8. Rozważ dodanie interfejsu `IMapElement`, który byłby implementowany przez klasy `Animal` oraz `Grass`. Zastanów się
-   czy można by uprościć implementację klasy `GrassField` wykorzystując ten interfejs.
-9. Zastanów się, czy celowe byłoby dodanie klasy `AbstractWorldMapElement`.
-10. (**Dla zaawansowanych**). Zmodyfikuj implementację tak, żeby po spotkaniu zwirzęcia i trawy, trawa znikała. Nowe kępki
-    trawy powinny pojawiać się losowo w obszarze z punktu 1, po zjedzeniu trawy przez zwierzę, przy założeniu, że nowe
-    kępki trawy nie pokrywa się z istniejącą kępką trawy, ani z żadnym zwierzęciem.
+### Obsługa wyjątków
+
+1. Wykorzystaj klasy z laboratorium 5.
+2. W metodzie odpowiedzialnej za zamianę argumentów aplikacji na ruchy zwierzęcia rzuć wyjątek `IllegalArgumentException`,
+  jeśli którykolwiek z parametrów nie należy do listy poprawnych parametrów (`f`, `forward`, `b`, `backward`, etc.).
+  Jako przyczynę wyjątku wprowadź łańcuch znaków informujący, że określony parametr jest niepoprawny, np.
+  `new IllegalArgumentException(argument + " is not legal move specification")`.
+3. W metodach odpowiedzialnych za dodawanie elementów do mapy zweryfikuj, czy dane pole nie jest już zajmowane.
+  Jeśli pole jest już zajęte, rzuć wyjątek `IllegalArgumentException`, podając jako przyczynę łańcuch znaków zawierający
+  informację o tym, które pole jest już zajęte.
+4. Obsłuż oba wyjątki w metodzie `main` klasy `World`. Obsługa powinna polegać na wyświetleniu komunikatu wyjątku
+   oraz zakończeniu działania programu, a konstrukcja `try` powinna obejmować cały kod znajdujący się w metodzie `main`.
+4. Przetestuj działanie wyjątków poprzez podanie nieprawidłowego parametru ruchu oraz dodanie do mapy dwa razy tego
+   samego zwierzęcia. Efektem powinno być kontrolowane zakończenie działania programu.
+
+### Zmiana sposobu przechowywania obiektów na mapie
+
+1. Implementacja metod `isOccupied` oraz `objectAt` w mapach nie jest wydajna, ponieważ za każdym razem wymaga przejścia
+   przez wszystkie elementy znajdujące się na mapie. Można ją poprawić zamieniając listę na słownik (wykorzystując 
+   interfejs `Map` oraz implementację `LinkedHashMap`) albo dodając obok listy zwierząt osobne pole będące mapą (w tym
+   wypadku wystarczy klasa `HashMap`).
+   Kluczami słownika powinny być pozycje elementów, a wartościami konkretne obiekty.
+6. Poprawna implementacja słownika wymaga, aby klasa `Vector2d` implementowała metodę `hashCode`. Metoda ta jest
+   wykorzystywana m.in. przez słownik oparty o tablicę haszującą (`HashMap`). Możesz wygenerować kod metody `hashCode` w
+   klasie `Vector2d` korzystając ze
+   wsparcia środowiska programistycznego. Zasadniczo metoda ta musi być zgodna z działaniem metody `equals` - dwa
+   obiekty, które są równe według metody `equals` muszą mieć identyczną wartość zwracaną przez metodę `hashCode`.
+7. Zmodyfikuj metodę `run` w klasach obsługujących mapę, tak by po każdym ruchu zwierzęcia sprawdzać, czy jego pozycja
+   się zmieniła i w razie zmiany aktualizować słownik: pozycja - obiekt na mapie.
+8. Zmiana implementacji kolekcji `animals` będzie wymagała zmiany implementacji metod `isOccupied`, `objectAt` oraz `run`.
+   W tej ostatniej metodzie możesz wykorzystać wywołanie `values()` z klasy `Map`, które zwróci kolekcję obiektów
+   (zwierząt) na mapie. Niestety zwrócona kolekcja nie jest listą. Zastanów się jak rozwiązać ten problem.
+9. Przetestuj działanie nowej implementacji korzystając z kodu z laboratorium nr 5.
+
+
