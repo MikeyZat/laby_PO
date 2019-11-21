@@ -1,92 +1,51 @@
-# Laboratorium 6
+# Laboratorium 7
 
-Celem laboratorium jest zapoznanie się z mechanizmem wyjątków oraz interfejsem `Map`.
+Celem laboratorium jest zapoznanie się z wzorcem projektowym `Observer`.
 
 ## Przydatne informacje
 
-* Wyjątki są mechanizmem pozwalającym przekazywać informację o błędzie pomiędzy odległymi fragmentami kodu.
-* Zgłoszenie błędu odbywa się poprze *rzucenie wyjątku*. W Javie służy do tego słowo kluczowe `throw`:
-
-```java
-throw new IllegalArgumentException("ABC argument is invalid")
-```
-* Nieobsłużony wyjątek powoduje przerwanie działania aplikacji.
-* Obsługa wyjątków odbywa się za pomocą mechanizmu *przechwytywania wyjątków*. W Javie służy do tego konstrukcja
-  `try...catch`:
-
-```java
-try {
-  // kod który może rzucić wyjątek
-} catch(IllegalArgumentException ex) {
-  // kod obsługi wyjątku
-}
-```
-Wyjątek może być rzucony na dowolnym poziomie w kodzie, który otoczony jest blokiem `try`. Tzn. w kodzie tym może być
-wiele zagnieżdżonych wywołań funkcji, a i tak blok `try` przechwyci taki wyjątek, pod warunkim, że nie zostanie on obsłużony
-na niższym poziomie.
-
-* Interfejs `Map` definiuje w Javie strukturę słownikową, czyli mapę odwzorowującą *klucze* na *wartości*.
-* Jedną z najczęściej wykorzystywanych implementacji interfejsu `Map` jest klasa `HashMap`, przykładowo:
-
-```java
-Map<Vector2d,Animal> animals = new HashMap<>();
-```
-
-* Poprawne działanie `HashMap` uzależnione jest od implementacji metod `equals` oraz `hashCode` w klasie, która stanowi
-  klucze mapy (w ćwiczeniu dotyczy to klasy `Vector2d`).
-
-* Wynik działania metody `hashCode` musi być zgodny z wynikiem działania metody `equals`, tzn. jeśli dwa obiekty są
-  równe według `equals` to ich `hashCode` musi być równy.
-
-* Przykładowa implementacja metody `hashCode` dla klasy `Vector2d` może wyglądać następująco:
-
-```java
-@Override
-public int hashCode() {
-  int hash = 13;
-  hash += this.x * 31;
-  hash += this.y * 17;
-  return hash;
-}
-```
-
-Istotą kodu nie są konkretne wartości, przez które mnożone są składniki `x` i `y` ale fakt, że dla identycznych wartości
-`x` i `y` wartość funkcji `hashCode` będzie identyczna.
+* Wzorce projektowe są koncepcją występującą w programowaniu obiektowym polegającą na tym, że określona klasa problemów
+  może być rozwiązana w schematyczny sposób. Rozwiązanie problemu jednak nie może być (najczęściej) zawarte w jednej
+  klasie, dlatego wzorzec stanowi swego rodzaju szkielet rozwiązania, który określa jakie klasy i interfejsy muszą być
+  wykorzystane, aby poprawnie rozwiązać dany problem.
+* Przykładem wzorca jest obserwator (*observer*) - rozwiązuje on problem zmian wewnętrznego stanu obiektu.
+  Więcej informacji na temat tego wzorca można znaleźć pod adresem https://en.wikipedia.org/wiki/Observer_pattern
+* W Javie istnieje kolekcja `SortedSet`, która umożliwia przechowywanie uporządkowanego zbioru elementów. Elementy mogą
+  implementować interfejs `Comparabel` lub przy tworzeniu zbioru należy wskazać obiekt implementujący interfejs
+  `Comparator`, odpowiedzialny za porządkowanie elementów.
 
 ## Zadania do wykonania
 
-### Obsługa wyjątków
+### Aktualizacja słownika w mapie
 
-1. Wykorzystaj klasy z laboratorium 5.
-2. W metodzie odpowiedzialnej za zamianę argumentów aplikacji na ruchy zwierzęcia rzuć wyjątek `IllegalArgumentException`,
-  jeśli którykolwiek z parametrów nie należy do listy poprawnych parametrów (`f`, `forward`, `b`, `backward`, etc.).
-  Jako przyczynę wyjątku wprowadź łańcuch znaków informujący, że określony parametr jest niepoprawny, np.
-  `new IllegalArgumentException(argument + " is not legal move specification")`.
-3. W metodach odpowiedzialnych za dodawanie elementów do mapy zweryfikuj, czy dane pole nie jest już zajmowane.
-  Jeśli pole jest już zajęte, rzuć wyjątek `IllegalArgumentException`, podając jako przyczynę łańcuch znaków zawierający
-  informację o tym, które pole jest już zajęte.
-4. Obsłuż oba wyjątki w metodzie `main` klasy `World`. Obsługa powinna polegać na wyświetleniu komunikatu wyjątku
-   oraz zakończeniu działania programu, a konstrukcja `try` powinna obejmować cały kod znajdujący się w metodzie `main`.
-4. Przetestuj działanie wyjątków poprzez podanie nieprawidłowego parametru ruchu oraz dodanie do mapy dwa razy tego
-   samego zwierzęcia. Efektem powinno być kontrolowane zakończenie działania programu.
+1. Implementacja mechanizmu aktualizacji słownika mapy wymaga, aby mapa była informowana o zmianach pozycji zwierząt.
+  Dotychczasowa implementacja opiera się na modyfikacji metody `run`. Lepszym rozwiązaniem jest zastosowanie
+   wzorca projektowego `Observer` - mapa ma zarejestrować się jako obserwator dla zmian pozycji zwierzęcia.
+2. Realizację implementacji rozpocznij od zdefiniowana interfejsu `IPositionChangeObserver`, który zawiera jedną metodę
+  `positionChanged(Vector2d oldPosition, Vector2d newPosition)`.
+3. Obie mapy muszą implementować ten interfejs. Możesz to zrealizować, jeśli odpowiedni kod umieścisz w klasie
+   `AbstractWorldMap`. Implementacja metody `positionChanged` powinna polegać na tym, że ze słownika usuwana jest para:
+   `<stara pozycja, zwierzę>`, a dodawana jest para: `<nowa pozycja, zwierzę>`.
+4. Klasa `Animal` musi umożliwić rejestrowanie obserwatorów. Dodaj metody: `void addObserver(IPositionChangeObserver
+    observer)` oraz `void removeObserver(IPositionChangeObserver observer)`, które będą dodawały i usuwały danego
+    obserwatora do listy obserwatorów w klasie `Animal`.
+5. Klasa `Animal` musi informować wszystkich obserwatorów, o tym że pozycja została zmieniona. Stwórz metodę
+    `positionChanged` w klasie `Animal`, która będzie notyfikowała wszystkich obserwatorów o zmianie.
+6. Zweryfikuj poprawność implementacji korzystając z kodu z poprzednich laboratoriów.
 
-### Zmiana sposobu przechowywania obiektów na mapie
+### Wyodrębnienie klasy reprezentującej obszar zajęty przez obiekty
 
-1. Implementacja metod `isOccupied` oraz `objectAt` w mapach nie jest wydajna, ponieważ za każdym razem wymaga przejścia
-   przez wszystkie elementy znajdujące się na mapie. Można ją poprawić zamieniając listę na słownik (wykorzystując 
-   interfejs `Map` oraz implementację `LinkedHashMap`) albo dodając obok listy zwierząt osobne pole będące mapą (w tym
-   wypadku wystarczy klasa `HashMap`).
-   Kluczami słownika powinny być pozycje elementów, a wartościami konkretne obiekty.
-6. Poprawna implementacja słownika wymaga, aby klasa `Vector2d` implementowała metodę `hashCode`. Metoda ta jest
-   wykorzystywana m.in. przez słownik oparty o tablicę haszującą (`HashMap`). Możesz wygenerować kod metody `hashCode` w
-   klasie `Vector2d` korzystając ze
-   wsparcia środowiska programistycznego. Zasadniczo metoda ta musi być zgodna z działaniem metody `equals` - dwa
-   obiekty, które są równe według metody `equals` muszą mieć identyczną wartość zwracaną przez metodę `hashCode`.
-7. Zmodyfikuj metodę `run` w klasach obsługujących mapę, tak by po każdym ruchu zwierzęcia sprawdzać, czy jego pozycja
-   się zmieniła i w razie zmiany aktualizować słownik: pozycja - obiekt na mapie.
-8. Zmiana implementacji kolekcji `animals` będzie wymagała zmiany implementacji metod `isOccupied`, `objectAt` oraz `run`.
-   W tej ostatniej metodzie możesz wykorzystać wywołanie `values()` z klasy `Map`, które zwróci kolekcję obiektów
-   (zwierząt) na mapie. Niestety zwrócona kolekcja nie jest listą. Zastanów się jak rozwiązać ten problem.
-9. Przetestuj działanie nowej implementacji korzystając z kodu z laboratorium nr 5.
-
-
+1. Dodaj nową klasę `MapBoundary`, która będzie odpowiedzialna za przechowywanie informacji o obszarze zajmowanym przez
+   obiekty na mapie.
+2. Klasa ta powinna również implementować interfejs `IPositionChangeObserver`.
+3. Klasa `MapBoundary` powinna zawierać dwa zbiory uporządkowane obiektów na mapie - jeden wzdłuż osi X, drugi wzdłuż
+   osi Y. Ponieważ porządek musi być zupełny, w przypadku obiektów o tym samym indeksie wzdłuż danej osi wykorzystaj
+   drugą współrzędną oraz typ obiektu, w celu określenia porządku zupełnego.
+4. Dodanie obiektu do mapy `GrassField` (`UnboundedMap`) powinno sktukować dodaniem tego obiektu do instancji
+   `MapBoundary`.
+5. Obiekty mają być dodawane w ten sposób, że skrajne pozycje na liście zawsze zajmowane są przez obiekty które mają
+   odpowiednio największą oraz najmniejszą wartość indeksu w danym wymiarze.
+6. W przypadku aktualizacji pozycji obiektu, należy sprawdzić, czy należy zaktualizować odpowiedni indeks i zrobić to,
+   tylko jeśli jest to konieczne.
+7. Mapa powinna korzystać z instancji klasy `MapBoundary` w celu efektywnego obliczania obszaru, który ma zostać
+   wyświetlony.
