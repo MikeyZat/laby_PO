@@ -1,9 +1,11 @@
 package agh.cs.lab1;
+import java.util.*;
 
-public class Animal implements IMapObject{
+public class Animal implements IMapObject, IPositionChangeSubject, Comparable<Animal>{
     private Vector2d position;
     private MapDirection orientation;
     private IWorldMap map;
+    private List <IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal() {
         this(2, 2);
@@ -54,8 +56,11 @@ public class Animal implements IMapObject{
                 Vector2d delta = orientation.toUnitVector();
                 if (direction == MoveDirection.BACKWARD) delta = delta.opposite();
                 Vector2d newPosition = position.add(delta);
-                if (map.canMoveTo(newPosition))
+                if (map.canMoveTo(newPosition)){
+                    Vector2d oldPosition = position;
                     position = newPosition;
+                    notifyObservers(oldPosition, newPosition);
+                }
                 break;
         }
     }
@@ -67,4 +72,26 @@ public class Animal implements IMapObject{
     public MapDirection getOrientation() {
         return orientation;
     }
+
+    @Override
+    public void addObserver(IPositionChangeObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(IPositionChangeObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyObservers( Vector2d oldPosition, Vector2d newPosition ){
+        for (IPositionChangeObserver observer : observers){
+            observer.positionChanged(oldPosition, newPosition);
+        }
+    }
+
+    @Override
+    public int compareTo(Animal o) {
+        return position.x - o.getPosition().x;
+    }
+
 }

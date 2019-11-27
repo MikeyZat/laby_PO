@@ -2,11 +2,12 @@ package agh.cs.lab1;
 
 import java.util.*;
 
-public abstract class AbstractWorldMap implements IWorldMap {
+public abstract class AbstractWorldMap implements IWorldMap,  IPositionChangeObserver {
     protected Vector2d rightUpCorner;
     protected Vector2d leftDownCorner;
     protected Map<Vector2d, Animal> animals = new HashMap<>();
     protected List<Animal> animalsList = new ArrayList<>();
+    protected MapBoundary boundries = new MapBoundary();
 
     @Override
     public void run(MoveDirection[] directions) {
@@ -18,16 +19,14 @@ public abstract class AbstractWorldMap implements IWorldMap {
         }
         for (int i = 0; i < directionsSize; i++) {
             Animal animal = animalsList.get(i % animalsSize);
-            animals.remove(animal.getPosition());
             animal.move(directions[i]);
-            animals.put(animal.getPosition(), animal);
         }
     }
 
     @Override
     public String toString() {
         MapVisualizer visualizer = new MapVisualizer(this);
-        return visualizer.draw(leftDownCorner, rightUpCorner);
+        return visualizer.draw(lowerLeft(), upperRight());
     }
 
 
@@ -44,14 +43,32 @@ public abstract class AbstractWorldMap implements IWorldMap {
         return null;
     }
 
+    public Vector2d lowerLeft(){
+        return boundries.leftCorner();
+    }
+
+    public Vector2d upperRight(){
+        return boundries.rightCorner();
+    }
+
     @Override
     public boolean place(Animal animal) throws IllegalArgumentException{
-        if (canMoveTo(animal.getPosition())) {
-            animals.put(animal.getPosition(), animal);
+        Vector2d position = animal.getPosition();
+        if (canMoveTo(position)) {
+            animals.put(position, animal);
+            boundries.addToSet(position);
             animalsList.add(animal);
+            animal.addObserver(this);
+            animal.addObserver(boundries);
             return true;
         }
         throw new IllegalArgumentException("Position " + animal.getPosition() + " is already taken.");
+    }
+
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
+        Animal animal = animals.get(oldPosition);
+        animals.remove(oldPosition);
+        animals.put(newPosition, animal);
     }
 
 }

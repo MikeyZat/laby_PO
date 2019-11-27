@@ -22,7 +22,6 @@ public class GrassFieldTest {
     }
     @Test
     public void objectAt() {
-        assertNull(map.objectAt(new Vector2d(1, 1)));
         assertEquals(animal1, map.objectAt(animal1.getPosition()));
         assertEquals(animal2, map.objectAt(animal2.getPosition()));
     }
@@ -31,7 +30,6 @@ public class GrassFieldTest {
     public void isOccupied() {
         assertTrue(map.isOccupied(animal1.getPosition()));
         assertTrue(map.isOccupied(animal2.getPosition()));
-        assertFalse(map.isOccupied(new Vector2d(1, 3)));
     }
 
     @Test
